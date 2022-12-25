@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 25-12-2022 a las 22:39:43
+-- Tiempo de generación: 25-12-2022 a las 23:04:10
 -- Versión del servidor: 10.6.5-MariaDB-log
 -- Versión de PHP: 8.1.10
 
@@ -20,11 +20,14 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `bd_universidad`
 --
+CREATE DATABASE IF NOT EXISTS `bd_universidad` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `bd_universidad`;
 
 DELIMITER $$
 --
 -- Procedimientos
 --
+DROP PROCEDURE IF EXISTS `mostrar_notas`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `mostrar_notas` (IN `cod_profesor` INTEGER, `cod_curso` INTEGER)   BEGIN
 	SELECT p.codigo ,mtr.codigo_mtr, CONCAT(p.primer_nombre , ' ', p.primer_apellido , ' ' , p.segundo_apellido) 'Nombres' , n.C1 , n.C2 , n.C3 , n.E1 , n.E2 , n.E3 , 
     n.nota_final , n.grupo, n.ausente FROM persona p
@@ -35,6 +38,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `mostrar_notas` (IN `cod_profesor` I
     where p.codigo = est.codigo_estu and n.codigo_mtr = mtr.codigo_mtr;
 END$$
 
+DROP PROCEDURE IF EXISTS `update_notas`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_notas` (IN `cod_matricula` INT, `cod_curso` INT, `grupo` VARCHAR(1), `estado` VARCHAR(1), `c1` INT, `c2` INT, `c3` INT, `e1` INT, `e2` INT, `e3` INT)   BEGIN 
 	update notas n set n.ausente= estado, n.C1 = c1, n.C2 = c2, n.C3 = c3 , n.E1 = e1, n.E2 = e2, n.E3 = e3
     where n.codigo_mtr = cod_matricula and n.codigo_curso = cod_curso;
@@ -47,6 +51,7 @@ END$$
 --
 -- Funciones
 --
+DROP FUNCTION IF EXISTS `update_nota_final`$$
 CREATE DEFINER=`root`@`localhost` FUNCTION `update_nota_final` (`codigo_matricula` INT, `cod_curso` INT) RETURNS INT(11) DETERMINISTIC BEGIN
 	DECLARE pc1 FLOAT;
     DECLARE pc2 FLOAT;
@@ -92,6 +97,7 @@ DELIMITER ;
 -- Estructura de tabla para la tabla `administracion`
 --
 
+DROP TABLE IF EXISTS `administracion`;
 CREATE TABLE `administracion` (
   `codigo_personal` int(11) NOT NULL,
   `cargo` varchar(100) DEFAULT NULL
@@ -129,6 +135,7 @@ INSERT INTO `administracion` (`codigo_personal`, `cargo`) VALUES
 -- Estructura de tabla para la tabla `becario`
 --
 
+DROP TABLE IF EXISTS `becario`;
 CREATE TABLE `becario` (
   `codigo_estu` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -165,6 +172,7 @@ INSERT INTO `becario` (`codigo_estu`) VALUES
 -- Estructura de tabla para la tabla `curso`
 --
 
+DROP TABLE IF EXISTS `curso`;
 CREATE TABLE `curso` (
   `codigo_curso` int(11) NOT NULL,
   `nombre` varchar(100) DEFAULT NULL,
@@ -256,6 +264,7 @@ INSERT INTO `curso` (`codigo_curso`, `nombre`, `creditos`, `PE1`, `PE2`, `PE3`, 
 -- Estructura de tabla para la tabla `departamento`
 --
 
+DROP TABLE IF EXISTS `departamento`;
 CREATE TABLE `departamento` (
   `codigo_depa` int(11) NOT NULL,
   `ubicacion` varchar(100) DEFAULT NULL,
@@ -315,6 +324,7 @@ INSERT INTO `departamento` (`codigo_depa`, `ubicacion`, `nombre`, `aforo`) VALUE
 -- Estructura de tabla para la tabla `estudiante`
 --
 
+DROP TABLE IF EXISTS `estudiante`;
 CREATE TABLE `estudiante` (
   `codigo_estu` int(11) NOT NULL,
   `fecha_nac` date DEFAULT NULL
@@ -420,6 +430,7 @@ INSERT INTO `estudiante` (`codigo_estu`, `fecha_nac`) VALUES
 -- Estructura de tabla para la tabla `inventario`
 --
 
+DROP TABLE IF EXISTS `inventario`;
 CREATE TABLE `inventario` (
   `codigo_obj` int(11) NOT NULL,
   `cantidad` int(11) DEFAULT NULL,
@@ -461,6 +472,7 @@ INSERT INTO `inventario` (`codigo_obj`, `cantidad`, `objeto`, `descripcion`, `co
 -- Estructura de tabla para la tabla `laboratorio`
 --
 
+DROP TABLE IF EXISTS `laboratorio`;
 CREATE TABLE `laboratorio` (
   `codigo_depa_lab` int(11) NOT NULL,
   `tipo` varchar(100) DEFAULT NULL
@@ -498,6 +510,7 @@ INSERT INTO `laboratorio` (`codigo_depa_lab`, `tipo`) VALUES
 -- Estructura de tabla para la tabla `matricula`
 --
 
+DROP TABLE IF EXISTS `matricula`;
 CREATE TABLE `matricula` (
   `codigo_mtr` int(11) NOT NULL,
   `codigo_estu` int(11) NOT NULL,
@@ -605,6 +618,7 @@ INSERT INTO `matricula` (`codigo_mtr`, `codigo_estu`, `fecha`) VALUES
 -- Estructura de tabla para la tabla `matricula_curso`
 --
 
+DROP TABLE IF EXISTS `matricula_curso`;
 CREATE TABLE `matricula_curso` (
   `codigo_mtr` int(11) NOT NULL,
   `codigo_curso` int(11) NOT NULL,
@@ -714,6 +728,7 @@ INSERT INTO `matricula_curso` (`codigo_mtr`, `codigo_curso`, `anio`, `semestre`,
 -- Estructura de tabla para la tabla `matricula_profesor`
 --
 
+DROP TABLE IF EXISTS `matricula_profesor`;
 CREATE TABLE `matricula_profesor` (
   `codigo_mtr` int(11) NOT NULL,
   `codigo_prof` int(11) NOT NULL
@@ -820,6 +835,7 @@ INSERT INTO `matricula_profesor` (`codigo_mtr`, `codigo_prof`) VALUES
 -- Estructura de tabla para la tabla `notas`
 --
 
+DROP TABLE IF EXISTS `notas`;
 CREATE TABLE `notas` (
   `codigo_notas` int(11) NOT NULL,
   `codigo_mtr` int(11) NOT NULL,
@@ -925,6 +941,7 @@ INSERT INTO `notas` (`codigo_notas`, `codigo_mtr`, `codigo_curso`, `grupo`, `aus
 -- Estructura de tabla para la tabla `no_becario`
 --
 
+DROP TABLE IF EXISTS `no_becario`;
 CREATE TABLE `no_becario` (
   `codigo_estu` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -1008,6 +1025,7 @@ INSERT INTO `no_becario` (`codigo_estu`) VALUES
 -- Estructura de tabla para la tabla `persona`
 --
 
+DROP TABLE IF EXISTS `persona`;
 CREATE TABLE `persona` (
   `codigo` int(11) NOT NULL,
   `primer_apellido` varchar(100) DEFAULT NULL,
@@ -1158,6 +1176,7 @@ INSERT INTO `persona` (`codigo`, `primer_apellido`, `segundo_apellido`, `primer_
 --
 -- Disparadores `persona`
 --
+DROP TRIGGER IF EXISTS `crear_correo`;
 DELIMITER $$
 CREATE TRIGGER `crear_correo` AFTER INSERT ON `persona` FOR EACH ROW BEGIN
 	INSERT persona_correo VALUES (NEW.codigo , concat(LCASE(LEFT(NEW.primer_nombre,1)) , LCASE(NEW.primer_apellido) , "@unsa.edu.pe"));
@@ -1171,6 +1190,7 @@ DELIMITER ;
 -- Estructura de tabla para la tabla `personal`
 --
 
+DROP TABLE IF EXISTS `personal`;
 CREATE TABLE `personal` (
   `codigo_personal` int(11) NOT NULL,
   `sueldo` float DEFAULT NULL,
@@ -1230,6 +1250,7 @@ INSERT INTO `personal` (`codigo_personal`, `sueldo`, `fecha_inicio`, `fecha_fina
 -- Estructura de tabla para la tabla `persona_correo`
 --
 
+DROP TABLE IF EXISTS `persona_correo`;
 CREATE TABLE `persona_correo` (
   `codigo_persona` int(11) NOT NULL,
   `correo` varchar(150) NOT NULL
@@ -1376,6 +1397,7 @@ INSERT INTO `persona_correo` (`codigo_persona`, `correo`) VALUES
 -- Estructura de tabla para la tabla `persona_depa`
 --
 
+DROP TABLE IF EXISTS `persona_depa`;
 CREATE TABLE `persona_depa` (
   `codigo_depa` int(11) NOT NULL,
   `codigo_persona` int(11) NOT NULL
@@ -1523,6 +1545,7 @@ INSERT INTO `persona_depa` (`codigo_depa`, `codigo_persona`) VALUES
 -- Estructura de tabla para la tabla `persona_telefono`
 --
 
+DROP TABLE IF EXISTS `persona_telefono`;
 CREATE TABLE `persona_telefono` (
   `codigo_persona` int(11) NOT NULL,
   `telefono` int(11) NOT NULL
@@ -1668,6 +1691,7 @@ INSERT INTO `persona_telefono` (`codigo_persona`, `telefono`) VALUES
 -- Estructura de tabla para la tabla `prerrequisitos`
 --
 
+DROP TABLE IF EXISTS `prerrequisitos`;
 CREATE TABLE `prerrequisitos` (
   `codigo_curso` int(11) NOT NULL,
   `curso1` int(11) DEFAULT NULL,
@@ -1753,6 +1777,7 @@ INSERT INTO `prerrequisitos` (`codigo_curso`, `curso1`, `curso2`) VALUES
 -- Estructura de tabla para la tabla `profesor`
 --
 
+DROP TABLE IF EXISTS `profesor`;
 CREATE TABLE `profesor` (
   `codigo_prof` int(11) NOT NULL,
   `grado_academico` varchar(150) DEFAULT NULL
@@ -1790,6 +1815,7 @@ INSERT INTO `profesor` (`codigo_prof`, `grado_academico`) VALUES
 -- Estructura de tabla para la tabla `profesor_curso`
 --
 
+DROP TABLE IF EXISTS `profesor_curso`;
 CREATE TABLE `profesor_curso` (
   `codigo_prof` int(11) NOT NULL,
   `codigo_curso` int(11) NOT NULL,
@@ -1830,6 +1856,7 @@ INSERT INTO `profesor_curso` (`codigo_prof`, `codigo_curso`, `fecha`, `grupo`, `
 -- Estructura de tabla para la tabla `salon`
 --
 
+DROP TABLE IF EXISTS `salon`;
 CREATE TABLE `salon` (
   `codigo_depa_salon` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -1866,6 +1893,7 @@ INSERT INTO `salon` (`codigo_depa_salon`) VALUES
 -- Estructura de tabla para la tabla `tipo_beca`
 --
 
+DROP TABLE IF EXISTS `tipo_beca`;
 CREATE TABLE `tipo_beca` (
   `codigo_estu_becario` int(11) NOT NULL,
   `beca` varchar(150) DEFAULT NULL
